@@ -30,5 +30,22 @@ namespace bulls_and_cows {
         }
         return MainMenuChoice::Error;
     }
+    MainMenuChoice1 ask_main_menu_choice1(std::istream& input_stream)
+    {
+        const int user_choice = ask_int_or_default(input_stream, -1);
+        switch (user_choice)
+        {
+        case 0:
+            return MainMenuChoice1::BackToTheMainMenu;
+        case 1:
+            return MainMenuChoice1::ModifyTheNumberOfCharacter;
+        case 2:
+            return MainMenuChoice1::ModifyTheMinimumCharacter;
+        case 3:
+
+            return MainMenuChoice1::ModifyTheMaximumCharacter;
+        }
+        return MainMenuChoice1::Error;
+    }
 
 } // namespace bulls_and_cows

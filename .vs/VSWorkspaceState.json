@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\bulls_and_cows_lib",
+    "\\src\\bulls_and_cows_prg",
+    "\\src\\bulls_and_cows_ut",
+    "\\thirdparties",
+    "\\thirdparties\\catch2",
+    "\\thirdparties\\catch2\\inc",
+    "\\thirdparties\\catch2\\inc\\catch2"
+  ],
+  "SelectedNode": "\\src\\bulls_and_cows_lib\\input.hpp",
+  "PreviewInSolutionExplorer": false
+}

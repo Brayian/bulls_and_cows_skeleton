@@ -15,7 +15,15 @@ namespace bulls_and_cows {
         UserPlaysAgainstComputer = 1,
         ComputerPlaysAgainstComputer = 2,
         ConfigureOptions = 3,
-    };
+    }; enum class MainMenuChoice1
+    {
+        Error = -1,
+        BackToTheMainMenu= 0,
+        ModifyTheNumberOfCharacter = 1,
+        ModifyTheMinimumCharacter = 2,
+        ModifyTheMaximumCharacter = 3,
+    }
+    ;
 
     // Ask the user to select an option of the menu
     MainMenuChoice ask_main_menu_choice(std::istream& input_stream);
