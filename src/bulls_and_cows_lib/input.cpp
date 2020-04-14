@@ -8,6 +8,7 @@ namespace bulls_and_cows {
     {
         std::string value{};
         std::getline(input_stream, value);
+        std::cin >> value;
         return value;
     }
 

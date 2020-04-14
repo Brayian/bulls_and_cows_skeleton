@@ -17,6 +17,8 @@
 #include <cstdlib>
 #include <time.h>
 #include <bulls_and_cows_lib\main_menu.cpp>
+#include <thread>
+#include <bulls_and_cows_lib\game_solver.cpp>
 
 
 
@@ -29,7 +31,7 @@
 #define COIN_BAS_GAUCHE     200
 namespace bulls_and_cows {
     std::string secret_code = "";
-    size_t taille_code=5;
+    size_t taille_code = 5;
     bool contains_duplicates(std::string s)
     {
         std::sort(s.begin(), s.end());
@@ -56,7 +58,7 @@ namespace bulls_and_cows {
                 else
                 {
                     tableau[x][y] = '0';
-                } 
+                }
             }
         }
 
@@ -76,15 +78,12 @@ namespace bulls_and_cows {
             std::cout << "\n";
         }
     }*/
-    
 
     void user_plays_against_computer(const GameOptions& game_options)
     {
         std::string acceptes = "abcdefghijklmnopqrstuvwyz";
-        
-        
-        
-        for (int i=0;i<taille_code;i++)
+
+        for (int i = 0; i < taille_code; i++)
         {
 
             secret_code += generate_random_character('a', 'k');
@@ -92,73 +91,95 @@ namespace bulls_and_cows {
         std::cout<<secret_code ;*/
         std::cout << "\n Oh no! The computer has generated a secret code. Can you guess it?\n";
         typedef std::string::size_type index;
-       
-        
-        std::string guess;
-         
-        
 
-       
- 
+        std::string guess;
+
         while (std::cout << "Your guess? ", std::getline(std::cin, guess))
         {
 
-            
-                   
-                    
+            if (guess.length() != taille_code || guess.find_first_not_of(acceptes) != std::string::npos ||
+                contains_duplicates(guess))
+            {
+                std::cout << guess << " is not a valid guess!";
+                continue;
+            }
 
-                    if (guess.length() != taille_code || guess.find_first_not_of(acceptes) != std::string::npos ||
-                        contains_duplicates(guess))
-                    {
-                        std::cout << guess << " is not a valid guess!";
-                        continue;
-                    }
-
-                    unsigned int bulls = 0;
-                    unsigned int cows = 0;
-                    for (index i = 0; i != taille_code; ++i)
-                    {
-                        index pos = secret_code.find(guess[i]);
-                        if (pos == i)
-                             ++bulls;
-                        else if (pos != std::string::npos)
-                             ++cows;
-                    }
-                    std::cout << bulls << " bulls, " << cows << " cows.\n";
-                    if (bulls == taille_code || guess == secret_code)
-                    {
-                        std::cout << "Congratulations! You have won!\n";
-                        return;
-                    }
-                    
-               
-            
+            unsigned int bulls = 0;
+            unsigned int cows = 0;
+            for (index i = 0; i != taille_code; ++i)
+            {
+                index pos = secret_code.find(guess[i]);
+                if (pos == i)
+                    ++bulls;
+                else if (pos != std::string::npos)
+                    ++cows;
+            }
+            std::cout << bulls << " bulls, " << cows << " cows.\n";
+            if (bulls == taille_code || guess == secret_code)
+            {
+                std::cout << "Congratulations! You have won!\n";
+                return;
+            }
         }
+    }
+
+    void computer_plays_against_computer(const GameOptions& game_options)
+    {
         
-}
+            std::cout
+                << "TODO:\n"
+                   "    Create a board with a randomly generated secret code\n"
+                   "    Generate the list of all the possible codes\n"
+                   "    DO\n"
+                   "       Display the board and the list of attempts so far\n"
+                   "       Display the number of remaining possible codes so far\n"
+                   "       Wait for 2 seconds\n"
+                   "       Pick a random attempt among in the list of remaining possible codes\n"
+                   "       Compare the computer's attempt with the secret code and deduce the number of bulls and "
+                   "cows\n"
+                   "       Add the computer's attempt to the list of attempts of the board\n"
+                   "       Remove all the codes that are incompatible with the attempt's feedback from the list of "
+                   "possible codes\n"
+                   "    WHILE not end of game\n"
+                   "    Display the board and the list of attempts so far\n"
+                   "    Display a message telling if the computer won or lost\n";
+
+            Board computergameboard = bulls_and_cows::create_board(game_options);
+            std::vector<Code> all_possible{};
+
+            all_possible = generate_possibilities(game_options);
+
+            bulls_and_cows::display_board(std::cout, game_options, computergameboard);
+
+            while (all_possible.size() > 0)
+            {
+                Code s = pick_random_attempt(all_possible);
+                AttemptAndFeedback newcomputerattemp;
+                newcomputerattemp.attempt = s;
+                newcomputerattemp.feedback = bulls_and_cows::compare_attempt_with_secret_code(s, computergameboard.secret_code);
+
+                computergameboard.attempts_and_feedbacks.push_back(newcomputerattemp);
+
+                bulls_and_cows::display_board(std::cout, game_options, computergameboard);
+
+                if (bulls_and_cows::is_win(game_options, computergameboard))
+                {
+                    std::cout << "Well done Computer\n";
+                    return;
+                }
+                if (bulls_and_cows::is_end_of_game(game_options, computergameboard))
+                {
+                    std::cout << " Computer loose\n";
+                    return;
+                }
+
+                remove_all_bad_codes(all_possible, game_options, newcomputerattemp);
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+        
+    }
 
 
-
-    
-
-void computer_plays_against_computer(const GameOptions& game_options)
-{
-    std::cout << "TODO:\n"
-                 "    Create a board with a randomly generated secret code\n"
-                 "    Generate the list of all the possible codes\n"
-                 "    DO\n"
-                 "       Display the board and the list of attempts so far\n"
-                 "       Display the number of remaining possible codes so far\n"
-                 "       Wait for 2 seconds\n"
-                 "       Pick a random attempt among in the list of remaining possible codes\n"
-                 "       Compare the computer's attempt with the secret code and deduce the number of bulls and cows\n"
-                 "       Add the computer's attempt to the list of attempts of the board\n"
-                 "       Remove all the codes that are incompatible with the attempt's feedback from the list of "
-                 "possible codes\n"
-                 "    WHILE not end of game\n"
-                 "    Display the board and the list of attempts so far\n"
-                 "    Display a message telling if the computer won or lost\n";
-}
 
 void display_main_menu1(std::ostream& output_stream)
 {
